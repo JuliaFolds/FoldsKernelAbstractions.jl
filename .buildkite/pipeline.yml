@@ -1,5 +1,8 @@
 steps:
   - label: "Julia v1"
+    if: |
+      build.pull_request.labels includes "no cuda" ||
+      build.pull_request.labels includes "no gpu"
     plugins:
       - JuliaCI/julia#v1:
           version: "1"
