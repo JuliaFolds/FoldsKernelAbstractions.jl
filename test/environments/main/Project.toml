@@ -1,0 +1,4 @@
+[deps]
+CUDAKernels = "72cfdca4-0801-4ab0-bf6a-d52aa10adc57"
+FoldsKernelAbstractions = "52461acb-21f3-48fe-a5ec-9a226775d6ac"
+KernelAbstractions = "63c18a36-062a-441e-b654-da1e3ab1ce7c"
