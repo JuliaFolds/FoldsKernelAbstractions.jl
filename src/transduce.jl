@@ -132,8 +132,7 @@ end
     # basecase
     n = @uniform length(idx)
     ill = @index(Local, Linear)
-    igl = @uniform @index(Group, Linear)
-    iglobal = @index(Global, Linear)
+    igl = @index(Group, Linear)
     offset = ill - 1 + (igl - 1) * groupsize()[1]
 
     i1 = offset * basesize + 1
