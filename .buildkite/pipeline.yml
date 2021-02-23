@@ -17,7 +17,7 @@ steps:
   - label: "Julia v1 (ROCm)"
     plugins:
       - JuliaCI/julia#v1:
-          version: "1"
+          version: "1.6-nightly"
       # - JuliaCI/julia-coverage#v1:
       #     codecov: true
     commands:
