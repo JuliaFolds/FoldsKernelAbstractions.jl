@@ -155,18 +155,22 @@ end
     shared = @localmem(T, (2 * groupsize()[1]))
     @inbounds shared[ill] = acc
 
-    @private m = ill - 1
-    @private t = ill
-    @private s = 1
-    @private c = nextpow(2, groupsize()[1]) >> 1
+    m = @private Int (1,)
+    t = @private Int (1,)
+    s = @private Int (1,)
+    c = @private Int (1,)
+    m = ill - 1
+    t = ill
+    s = 1
+    c = nextpow(2, groupsize()[1]) >> 1
     while c != 0
         @synchronize
         if t + s <= bound && iseven(m)
             @inbounds shared[t] = _combine(rf, shared[t], shared[t+s])
-            @private m >>= 1
+            m >>= 1
         end
-        @private s <<= 1
-        @private c >>= 1
+        s <<= 1
+        c >>= 1
     end
 
     if t == 1
