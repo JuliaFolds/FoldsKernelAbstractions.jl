@@ -1,5 +1,5 @@
 steps:
-  - label: "Julia v1"
+  - label: "Julia v1 (CUDA)"
     plugins:
       - JuliaCI/julia#v1:
           version: "1"
@@ -12,6 +12,21 @@ steps:
     agents:
       queue: "juliagpu"
       cuda: "*"
+    timeout_in_minutes: 60
+
+  - label: "Julia v1 (ROCm)"
+    plugins:
+      - JuliaCI/julia#v1:
+          version: "1"
+      # - JuliaCI/julia-coverage#v1:
+      #     codecov: true
+    commands:
+      - julia -e 'using Pkg; Pkg.add(name="Run", version="0.1")'
+      - julia -e 'using Run; Run.prepare("test/environments/rocm")'
+      - julia -e 'using Run; Run.test(project="test/environments/rocm")'
+    agents:
+      queue: "juliagpu"
+      rocm: "*"
     timeout_in_minutes: 60
 
 env:
