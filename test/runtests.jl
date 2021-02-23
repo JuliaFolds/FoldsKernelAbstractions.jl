@@ -9,7 +9,8 @@ catch
 end
 
 const TEST_ROC = try
-    import ROC
+    import AMDGPU
+    true
 catch
     false
 end
