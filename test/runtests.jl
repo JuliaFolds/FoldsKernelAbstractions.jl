@@ -1,6 +1,11 @@
 module TestFoldsKernelAbstractions
 using Test
 
+# Workaround import error of CompilerSupportLibraries_jll
+if VERSION ≥ v"1.6-"
+    push!(LOAD_PATH, "@stdlib")
+end
+
 const TEST_CUDA = try
     import CUDA
     CUDA.has_cuda_gpu()
