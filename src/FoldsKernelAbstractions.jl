@@ -4,7 +4,7 @@ export KAEx
 
 using Core.Compiler: return_type
 using Core: Typeof
-using GPUArrays: @allowscalar, AbstractGPUArray
+using GPUArrays: @allowscalar
 using InitialValues: InitialValue, asmonoid
 using KernelAbstractions
 using Requires: @require

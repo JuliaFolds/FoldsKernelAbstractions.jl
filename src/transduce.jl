@@ -133,7 +133,6 @@ end
     n = length(idx)
     ill = @index(Local, Linear)
     igl = @index(Group, Linear)
-    iglobal = @index(Global, Linear)
     offset = ill - 1 + (igl - 1) * groupsize()[1]
 
     i1 = offset * basesize + 1
