@@ -148,8 +148,6 @@ end
     end
 
     # combineblock
-    offsetb = @uniform (igl - 1) * groupsize()[1]
-    bound = @uniform max(0, nbasecases - offsetb)
 
     # shared mem for a complete reduction
     shared = @localmem(T, (2 * groupsize()[1]))
@@ -165,6 +163,9 @@ end
     c = nextpow(2, groupsize()[1]) >> 1
     while c != 0
         @synchronize
+        igl = @index(Group, Linear)
+        offsetb = (igl - 1) * groupsize()[1]
+        bound = max(0, nbasecases - offsetb)
         if t + s <= bound && iseven(m)
             @inbounds shared[t] = _combine(rf, shared[t], shared[t+s])
             m >>= 1
@@ -174,6 +175,7 @@ end
     end
 
     if t == 1
+        igl = @index(Group, Linear)
         @inbounds dest[igl] = shared[1]
     end
 end
