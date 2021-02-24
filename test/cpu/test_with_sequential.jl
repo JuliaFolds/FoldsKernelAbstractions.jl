@@ -1,4 +1,3 @@
-# This does not work ATM
 module TestWithSequential
 
 include("../with_sequential.jl")

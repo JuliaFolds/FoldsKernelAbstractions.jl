@@ -130,7 +130,7 @@ end
     arrays...,
 ) where {F,T}
     # basecase
-    n = length(idx)
+    n = @uniform length(idx)
     ill = @index(Local, Linear)
     igl = @index(Group, Linear)
     offset = ill - 1 + (igl - 1) * groupsize()[1]
@@ -148,19 +148,24 @@ end
     end
 
     # combineblock
-    offsetb = (igl - 1) * groupsize()[1]
-    bound = max(0, nbasecases - offsetb)
 
     # shared mem for a complete reduction
     shared = @localmem(T, (2 * groupsize()[1]))
     @inbounds shared[ill] = acc
 
+    m = @private Int (1,)
+    t = @private Int (1,)
+    s = @private Int (1,)
+    c = @private Int (1,)
     m = ill - 1
     t = ill
     s = 1
     c = nextpow(2, groupsize()[1]) >> 1
     while c != 0
         @synchronize
+        igl = @index(Group, Linear)
+        offsetb = (igl - 1) * groupsize()[1]
+        bound = max(0, nbasecases - offsetb)
         if t + s <= bound && iseven(m)
             @inbounds shared[t] = _combine(rf, shared[t], shared[t+s])
             m >>= 1
@@ -170,6 +175,7 @@ end
     end
 
     if t == 1
+        igl = @index(Group, Linear)
         @inbounds dest[igl] = shared[1]
     end
 end
