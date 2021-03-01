@@ -1,6 +1,15 @@
+using FLoops
 using Folds
 using FoldsKernelAbstractions
+using Referenceables
 using Test
+
+function inc!(xs, ex = nothing)
+    @floop ex for x in referenceable(xs)
+        x[] += 1
+    end
+    return xs
+end
 
 function test_size(
     device;
@@ -9,9 +18,13 @@ function test_size(
     extraitems = 0,
     n = groupsize * basesize + extraitems,
 )
-    @test Folds.sum(1:n, KAEx(device; groupsize, basesize)) == sum(1:n)
-    @test Folds.reduce(xor, 1:n, KAEx(device; groupsize, basesize); init = 0) ==
-          reduce(xor, 1:n; init = 0)
+    ex = KAEx(device; groupsize, basesize)
+
+    @test Folds.sum(1:n, ex) == sum(1:n)
+    @test Folds.reduce(xor, 1:n, ex; init = 0) == reduce(xor, 1:n; init = 0)
+
+    xs = FoldsKernelAbstractions.arrayfor(device)(1:n)
+    @test inc!(xs, ex) == 2:n+1
 end
 
 function test_sweep_sizes(device)
