@@ -147,30 +147,34 @@ end
         acc = next(rf, acc, x)
     end
 
-    # combineblock
-    offsetb = (igl - 1) * groupsize()[1]
-    bound = max(0, nbasecases - offsetb)
+    if Base.issingletontype(T)
+        # nothing to reduce (e.g., @floop w/o @reduce)
+    else
+        # combineblock
+        offsetb = (igl - 1) * groupsize()[1]
+        bound = max(0, nbasecases - offsetb)
 
-    # shared mem for a complete reduction
-    shared = @localmem(T, (2 * groupsize()[1]))
-    @inbounds shared[ill] = acc
+        # shared mem for a complete reduction
+        shared = @localmem(T, (2 * groupsize()[1]))
+        @inbounds shared[ill] = acc
 
-    m = ill - 1
-    t = ill
-    s = 1
-    c = nextpow(2, groupsize()[1]) >> 1
-    while c != 0
-        @synchronize
-        if t + s <= bound && iseven(m)
-            @inbounds shared[t] = _combine(rf, shared[t], shared[t+s])
-            m >>= 1
+        m = ill - 1
+        t = ill
+        s = 1
+        c = nextpow(2, groupsize()[1]) >> 1
+        while c != 0
+            @synchronize
+            if t + s <= bound && iseven(m)
+                @inbounds shared[t] = _combine(rf, shared[t], shared[t+s])
+                m >>= 1
+            end
+            s <<= 1
+            c >>= 1
         end
-        s <<= 1
-        c >>= 1
-    end
 
-    if t == 1
-        @inbounds dest[igl] = shared[1]
+        if t == 1
+            @inbounds dest[igl] = shared[1]
+        end
     end
 end
 
