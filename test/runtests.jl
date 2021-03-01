@@ -5,6 +5,8 @@ import CUDA
 const TEST_CUDA = CUDA.has_cuda_gpu()
 const TEST_GPU = TEST_CUDA
 
+TEST_CUDA && CUDA.allowscalar(false)
+
 find_test(subdir = "") = sort([
     joinpath(subdir, file) for file in readdir(joinpath(@__DIR__, subdir)) if
     match(r"^test_.*\.jl$", file) !== nothing

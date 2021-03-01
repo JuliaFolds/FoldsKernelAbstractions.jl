@@ -24,7 +24,7 @@ function test_size(
     @test Folds.reduce(xor, 1:n, ex; init = 0) == reduce(xor, 1:n; init = 0)
 
     xs = FoldsKernelAbstractions.arrayfor(device)(1:n)
-    @test inc!(xs, ex) == 2:n+1
+    @test collect(inc!(xs, ex)) == 2:n+1
 end
 
 function test_sweep_sizes(device)
