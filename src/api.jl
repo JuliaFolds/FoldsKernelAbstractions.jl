@@ -15,6 +15,9 @@ popsimd(; simd = nothing, kwargs...) = kwargs
 Transducers.transduce(xf, rf::RF, init, xs, exc::KAEx) where {RF} =
     transduce_ka(xf, rf, init, xs, exc.device; popsimd(; exc.kwargs...)...)
 
+# TODO: Once `groupsize` and `basesize` can be auto-tuned for non-CUDA GPUs,
+# hook `KAEx` into the executor promotion mechanism.
+
 function Base.show(io::IO, exc::KAEx)
     @nospecialize exc
     T = typeof(exc.kwargs)
