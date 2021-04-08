@@ -1,9 +1,26 @@
 module TestFoldsKernelAbstractions
 using Test
-import CUDA
 
-const TEST_CUDA = CUDA.has_cuda_gpu()
-const TEST_GPU = TEST_CUDA
+# Workaround import error of CompilerSupportLibraries_jll
+if VERSION ≥ v"1.6-"
+    push!(LOAD_PATH, "@stdlib")
+end
+
+const TEST_CUDA = try
+    import CUDA
+    CUDA.has_cuda_gpu()
+catch
+    false
+end
+
+const TEST_ROC = try
+    import AMDGPU
+    true
+catch
+    false
+end
+
+const TEST_GPU = TEST_CUDA || TEST_ROC
 
 TEST_CUDA && CUDA.allowscalar(false)
 
@@ -23,6 +40,11 @@ end
 
 @testset "$file" for file in find_test("cuda")
     TEST_CUDA || continue
+    include(file)
+end
+
+@testset "$file" for file in find_test("rocm")
+    TEST_ROC || continue
     include(file)
 end
 
