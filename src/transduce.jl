@@ -24,14 +24,14 @@ end
 function transduce_impl(device, groupsize, basesize, rf::F, init, arrays...) where {F}
     (ys, buf) = transduce!(nothing, device, groupsize, basesize, rf, init, arrays...)
     # @info "ys, = transduce!(nothing, rf, ...)" ys
-    length(ys) == 1 && return @allowscalar ys[begin:end][1]
+    length(ys) == 1 && return @allowscalar ys[1]
     monoid = asmonoid(always_combine(rf))
     rf2 = Map(first)'(monoid)  # TODO: reduce wrapping
     dest = ys
     while true
         ys, = transduce!(buf, device, groupsize, basesize, rf2, InitialValue(monoid), ys)
         # @info "ys, = transduce!(buf, rf2, ...)" ys
-        length(ys) == 1 && return @allowscalar ys[begin:end][1]
+        length(ys) == 1 && return @allowscalar ys[1]
         dest, buf = buf, dest
         # reusing buffer; is it useful?
     end
